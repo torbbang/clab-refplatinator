@@ -1,0 +1,35 @@
+# Input refplat files (proprietary/licensed)
+refplats/
+refplats*.zip
+refplats*.iso
+
+# Extracted images
+refplat-images/
+
+# Build artifacts
+*.log
+build.log
+
+# Temporary files
+tmp*
+*.tmp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+
+# vrnetlab repository
+vrnetlab/
+
+# Docker
+.docker/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
