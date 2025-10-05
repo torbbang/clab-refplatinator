@@ -303,7 +303,7 @@ PLATFORM_PATTERNS = [
         },
         # Cisco C8000V (Catalyst 8000V) - convert 17_16_01A to 17.16.01a
         {
-            'pattern': r'^c8000v_universalk9.*\.qco$',
+            'pattern': r'^c8000v[-_]universalk9.*\.qcow2$',
             'platform': 'c8000v',
             'rename_format': 'c8000v-{version}.qcow2',
             'version_transform': lambda v: v.replace('_', '.').lower() if '_' in v else v
@@ -328,38 +328,38 @@ PLATFORM_PATTERNS = [
         },
         # Cisco IOSv (vIOS Layer 3)
         {
-            'pattern': r'^vios_adventerprisek9_m_spa.*\.qco$',
+            'pattern': r'^vios[-_]adventerprisek9[-_]m[-_]spa.*\.qcow2$',
             'platform': 'vios',
             'rename_format': 'cisco_vios-{version}.qcow2'
         },
         # Cisco IOSvL2 (vIOS Layer 2)
         {
-            'pattern': r'^vios_l2_adventerprisek9_m_s.*\.qco$',
+            'pattern': r'^vios[-_]l2[-_]adventerprisek9[-_]m[-_]s.*\.qcow2$',
             'platform': 'viosl2',
             'rename_format': 'cisco_viosl2-{version}.qcow2'
         },
         # Cisco ISE (as generic VM)
         {
-            'pattern': r'^cisco_vise.*\.qcow2$',
+            'pattern': r'^cisco[-_]vise.*\.qcow2$',
             'platform': 'generic_vm',
             'rename_format': 'cisco_ise-{version}.qcow2'
         },
         # Cisco Secure Firewall Threat Defense (FTDv) - convert 7_7_0 to 7.7.0-1
         {
-            'pattern': r'^cisco_secure_firewall_threa.*\.qco$',
+            'pattern': r'^cisco[-_]secure[-_]firewall[-_]threa.*\.qcow2$',
             'platform': 'ftdv',
             'rename_format': 'Cisco_Secure_Firewall_Threat_Defense_Virtual-{version}-1.qcow2',
             'version_transform': lambda v: v.replace('_', '.') if '_' in v else v
         },
         # Cisco Secure Firewall Management Center
         {
-            'pattern': r'^cisco_secure_fw_mgmt_center.*\.qco$',
+            'pattern': r'^cisco[-_]secure[-_]fw[-_]mgmt[-_]center.*\.qcow2$',
             'platform': 'generic_vm',
             'rename_format': 'cisco_fmc-{version}.qcow2'
         },
         # Cisco C9800-CL Wireless Controller
         {
-            'pattern': r'^c9800_cl_universalk9.*\.qco$',
+            'pattern': r'^c9800[-_]cl[-_]universalk9.*\.qcow2$',
             'platform': 'generic_vm',
             'rename_format': 'cisco_c9800cl-{version}.qcow2'
         }
