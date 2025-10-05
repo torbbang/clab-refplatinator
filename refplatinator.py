@@ -71,6 +71,9 @@ def extract_images_from_refplats(source_dir="refplats", output_dir="refplat-imag
             if platform_dir.is_dir():
                 supported_platforms.add(platform_dir.name)
 
+    # Add generic_vm for platforms not directly supported by vrnetlab
+    supported_platforms.add('generic_vm')
+
     print(f"Found {len(supported_platforms)} supported platforms: {', '.join(sorted(supported_platforms))}")
 
     for refplat_file in refplats_dir.glob("*"):
@@ -155,11 +158,17 @@ def extract_from_iso(iso_file, output_dir, supported_platforms):
 
         extracted_files = {}  # Track extracted files by filename -> {path, size}
 
+        # Determine which path type to use (prefer Joliet for full filenames)
+        use_joliet = iso.joliet_vd is not None
+        path_type = 'joliet_path' if use_joliet else 'iso_path'
+        path_kwargs = {path_type: '/'}
+        dir_pattern = '/virl-base-images/' if use_joliet else '/VIRL_BASE_IMAGES/'
+
         # First pass: collect all files and their sizes
-        for dirname, dirlist, filelist in iso.walk(iso_path='/'):
-            if '/VIRL_BASE_IMAGES/' in dirname:
+        for dirname, dirlist, filelist in iso.walk(**path_kwargs):
+            if dir_pattern in dirname:
                 for filename in filelist:
-                    if any(ext in filename.upper() for ext in ['.QCOW2', '.IMG', '.IOL', '.QCO']):
+                    if any(ext in filename.upper() for ext in ['.QCOW2', '.IMG', '.IOL']):
                         # Check if we should extract this file based on supported platforms
                         if not should_extract_file(filename, supported_platforms, PLATFORM_PATTERNS):
                             continue
@@ -168,7 +177,7 @@ def extract_from_iso(iso_file, output_dir, supported_platforms):
 
                         # Get file size to determine which version to use
                         try:
-                            entry = iso.get_entry(iso_path=iso_path)
+                            entry = iso.get_entry(iso_path, joliet=use_joliet)
                             file_size = entry.data_length
                         except:
                             file_size = 0
@@ -181,16 +190,18 @@ def extract_from_iso(iso_file, output_dir, supported_platforms):
         for filename, file_info in extracted_files.items():
             iso_path = file_info['path']
             file_size = file_info['size']
-            output_path = file_output_dir / filename
+            # Remove ISO version suffix (;1) from filename
+            clean_filename = filename.replace(';1', '')
+            output_path = file_output_dir / clean_filename
 
-            print(f"  Extracting {filename} ({file_size} bytes) from {iso_path}")
+            print(f"  Extracting {clean_filename} ({file_size} bytes) from {iso_path}")
 
             # Skip files with zero size
             if file_size == 0:
                 print(f"    Skipping {filename} (zero bytes)")
                 continue
 
-            iso.get_file_from_iso(str(output_path), iso_path=iso_path)
+            iso.get_file_from_iso(str(output_path), **{path_type: iso_path})
 
             # Store the original ISO folder name for version extraction
             iso_folder_name = iso_path.split('/')[-2] if '/' in iso_path else ''
@@ -333,24 +344,6 @@ PLATFORM_PATTERNS = [
             'platform': 'generic_vm',
             'rename_format': 'cisco_ise-{version}.qcow2'
         },
-        # Viptela vManage (SD-WAN controller)
-        {
-            'pattern': r'^viptela_vmanage.*\.qco$',
-            'platform': 'generic_vm',
-            'rename_format': 'viptela_vmanage-{version}.qcow2'
-        },
-        # Viptela vSmart (SD-WAN controller)
-        {
-            'pattern': r'^viptela_smart.*\.qco$',
-            'platform': 'generic_vm',
-            'rename_format': 'viptela_vsmart-{version}.qcow2'
-        },
-        # Viptela vBond (SD-WAN orchestrator)
-        {
-            'pattern': r'^viptela_bond.*\.qco$',
-            'platform': 'generic_vm',
-            'rename_format': 'viptela_vbond-{version}.qcow2'
-        },
         # Cisco Secure Firewall Threat Defense (FTDv) - convert 7_7_0 to 7.7.0-1
         {
             'pattern': r'^cisco_secure_firewall_threa.*\.qco$',
@@ -476,15 +469,14 @@ def build_vrnetlab_images(extracted_images_dir="refplat-images", vrnetlab_dir="v
             new_name = mapping['rename_to']
             version = mapping['version']
 
-            # Handle generic VMs differently
+            # Handle generic VMs differently (no vrnetlab build)
             if platform == 'generic_vm':
-                print(f"  Creating generic VM image: {new_name}")
-                # Just copy the image to a generic VMs directory
-                generic_vm_dir = Path(extracted_images_dir) / "generic_vms"
-                generic_vm_dir.mkdir(exist_ok=True)
+                print(f"  Creating {platform} image: {new_name}")
+                target_dir = Path(extracted_images_dir) / "generic_vms"
+                target_dir.mkdir(exist_ok=True)
 
                 import shutil
-                output_path = generic_vm_dir / new_name
+                output_path = target_dir / new_name
                 shutil.copy2(image_file, output_path)
                 print(f"  ✓ Copied to: {output_path}")
                 continue
