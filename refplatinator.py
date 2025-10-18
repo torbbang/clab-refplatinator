@@ -301,12 +301,12 @@ PLATFORM_PATTERNS = [
             'platform': 'csr1000v',
             'rename_format': 'csr1000v-universalk9.{version}-serial.qcow2'
         },
-        # Cisco C8000V (Catalyst 8000V) - convert 17_16_01A to 17.16.01a
+        # Cisco C8000V (Catalyst 8000V) - extract version like 17.16.01a from filename
         {
-            'pattern': r'^c8000v[-_]universalk9.*\.qcow2$',
+            'pattern': r'^c8000v[-_]universalk9.*\.(\d+\.\d+\.\d+[a-z]?)\.qcow2$',
             'platform': 'c8000v',
-            'rename_format': 'c8000v-{version}.qcow2',
-            'version_transform': lambda v: v.replace('_', '.').lower() if '_' in v else v
+            'rename_format': 'c8000v-universalk9.{version}.qcow2',
+            'version_extract': lambda m: {'version': m.group(1)}
         },
         # Cisco IOL (L3)
         {
@@ -362,6 +362,24 @@ PLATFORM_PATTERNS = [
             'pattern': r'^c9800[-_]cl[-_]universalk9.*\.qcow2$',
             'platform': 'generic_vm',
             'rename_format': 'cisco_c9800cl-{version}.qcow2'
+        },
+        # Cisco SD-WAN vManage
+        {
+            'pattern': r'^.*[_-]?v?manage[_-].*\.qcow2$',
+            'platform': 'sdwan-components',
+            'rename_format': 'viptela-vmanage-{version}.qcow2'
+        },
+        # Cisco SD-WAN vSmart (controller)
+        {
+            'pattern': r'^.*[_-]?v?smart[_-].*\.qcow2$',
+            'platform': 'sdwan-components',
+            'rename_format': 'viptela-vsmart-{version}.qcow2'
+        },
+        # Cisco SD-WAN vBond (validator)
+        {
+            'pattern': r'^.*[_-]?v?bond[_-].*\.qcow2$',
+            'platform': 'sdwan-components',
+            'rename_format': 'viptela-vbond-{version}.qcow2'
         }
 ]
 
@@ -397,7 +415,11 @@ def build_vrnetlab_images(extracted_images_dir="refplat-images", vrnetlab_dir="v
                 if 'version_extract' in platform_config:
                     version_parts = platform_config['version_extract'](match)
                     rename_to = platform_config['rename_format'].format(**version_parts)
-                    version = f"{version_parts.get('major', '')}.{version_parts.get('minor', '')}.{version_parts.get('patch', '')}"
+                    # If version is directly provided, use it; otherwise construct from parts
+                    if 'version' in version_parts:
+                        version = version_parts['version']
+                    else:
+                        version = f"{version_parts.get('major', '')}.{version_parts.get('minor', '')}.{version_parts.get('patch', '')}"
                 else:
                     # Apply version transformation if specified
                     if 'version_transform' in platform_config:
