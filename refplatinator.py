@@ -328,13 +328,13 @@ PLATFORM_PATTERNS = [
         },
         # Cisco IOSv (vIOS Layer 3)
         {
-            'pattern': r'^vios[-_]adventerprisek9[-_]m[-_]spa.*\.qcow2$',
+            'pattern': r'^vios[-_]adventerprisek9[-_]m[-_.]spa.*\.qcow2$',
             'platform': 'vios',
             'rename_format': 'cisco_vios-{version}.qcow2'
         },
         # Cisco IOSvL2 (vIOS Layer 2)
         {
-            'pattern': r'^vios[-_]l2[-_]adventerprisek9[-_]m[-_]s.*\.qcow2$',
+            'pattern': r'^vios[-_]l2[-_]adventerprisek9[-_]m[-_.]s.*\.qcow2$',
             'platform': 'viosl2',
             'rename_format': 'cisco_viosl2-{version}.qcow2'
         },
@@ -363,23 +363,26 @@ PLATFORM_PATTERNS = [
             'platform': 'generic_vm',
             'rename_format': 'cisco_c9800cl-{version}.qcow2'
         },
-        # Cisco SD-WAN vManage
+        # Cisco SD-WAN vManage - extract version like 20.16.1 from filename
         {
-            'pattern': r'^.*[_-]?v?manage[_-].*\.qcow2$',
+            'pattern': r'^.*[_-]?v?manage[_-](\d+[._]\d+[._]\d+).*\.qcow2$',
             'platform': 'sdwan-components',
-            'rename_format': 'viptela-vmanage-{version}.qcow2'
+            'rename_format': 'viptela-vmanage-{version}.qcow2',
+            'version_extract': lambda m: {'version': m.group(1).replace('_', '.')}
         },
-        # Cisco SD-WAN vSmart (controller)
+        # Cisco SD-WAN vSmart (controller) - extract version like 20.16.1 from filename
         {
-            'pattern': r'^.*[_-]?v?smart[_-].*\.qcow2$',
+            'pattern': r'^.*[_-]?v?smart[_-](\d+[._]\d+[._]\d+).*\.qcow2$',
             'platform': 'sdwan-components',
-            'rename_format': 'viptela-vsmart-{version}.qcow2'
+            'rename_format': 'viptela-vsmart-{version}.qcow2',
+            'version_extract': lambda m: {'version': m.group(1).replace('_', '.')}
         },
-        # Cisco SD-WAN vBond (validator)
+        # Cisco SD-WAN vBond (validator) - extract version like 20.16.1 from filename
         {
-            'pattern': r'^.*[_-]?v?bond[_-].*\.qcow2$',
+            'pattern': r'^.*[_-]?v?bond[_-](\d+[._]\d+[._]\d+).*\.qcow2$',
             'platform': 'sdwan-components',
-            'rename_format': 'viptela-vbond-{version}.qcow2'
+            'rename_format': 'viptela-vbond-{version}.qcow2',
+            'version_extract': lambda m: {'version': m.group(1).replace('_', '.')}
         }
 ]
 
