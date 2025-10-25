@@ -17,7 +17,32 @@ This tool automates the process of:
 
 ## Installation
 
-1. Clone or download this repository
+### Quick Install (curl | bash)
+
+> **⚠️ CAUTION:** Piping scripts directly to bash can be dangerous. Always review the script before running it.
+>
+> View the install script first: https://raw.githubusercontent.com/torbbang/clab-refplatinator/main/install.sh
+
+For a quick automated installation:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/torbbang/clab-refplatinator/main/install.sh | bash
+```
+
+Or to customize the installation directory:
+
+```bash
+INSTALL_DIR=/opt/refplatinator curl -fsSL https://raw.githubusercontent.com/torbbang/clab-refplatinator/main/install.sh | bash
+```
+
+### Manual Installation
+
+1. Clone or download this repository:
+   ```bash
+   git clone https://github.com/torbbang/clab-refplatinator.git
+   cd clab-refplatinator
+   ```
+
 2. Install Python dependencies:
    ```bash
    pip install -r requirements.txt

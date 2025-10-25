@@ -312,13 +312,15 @@ PLATFORM_PATTERNS = [
         {
             'pattern': r'^x86_64_crb_linux_adventerpr.*\.iol$',
             'platform': 'iol',
-            'rename_format': 'cisco_iol-{version}.bin'
+            'rename_format': 'cisco_iol-{version}.bin',
+            'version_transform': lambda v: v.replace('_', '.') if '_' in v else v
         },
         # Cisco IOL L2
         {
             'pattern': r'^x86_64_crb_linux_l2.*\.iol$',
             'platform': 'iol',
-            'rename_format': 'cisco_iol-L2-{version}.bin'
+            'rename_format': 'cisco_iol-L2-{version}.bin',
+            'version_transform': lambda v: v.replace('_', '.') if '_' in v else v
         },
         # Cisco ISE
         {
