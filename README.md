@@ -1,3 +1,9 @@
+> [!IMPORTANT]
+> ## 🚚 This project has moved to [git.torbjorn.dev](https://git.torbjorn.dev/torbbang/clab-refplatinator)
+> This GitHub repository is archived and no longer maintained.
+
+---
+
 # Refplatinator
 
 A tool to extract Cisco network device images from Cisco Reference Platform (refplat) files and build vrnetlab Docker images for network simulation.
